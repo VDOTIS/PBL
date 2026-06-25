@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECOGREEN - Together for Lebanon</title>
+    <!-- Tailwind CSS for modern layout styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        olive: '#556B2F',
+                        wine: '#722F37',
+                        ecoGreen: '#2E8B57',
+                        warmCream: '#FDFBF7'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-warmCream text-stone-800 font-sans antialiased scroll-smooth">
+
+    <!-- ========================================== -->
+    <!-- AUTHENTICATION VIEW (Login / Sign Up)      -->
+    <!-- ========================================== -->
+    <div id="auth-view" class="fixed inset-0 z-50 bg-stone-900/40 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-stone-100 overflow-hidden transition-all transform scale-100">
+            <!-- Header Banner Inside Auth Card -->
+            <div class="bg-gradient-to-r from-stone-900 via-stone-800 to-stone-900 p-6 text-center text-white">
+                <span class="text-3xl block mb-2">🌱</span>
+                <h2 class="text-xl font-bold tracking-tight">Welcome to ECOGREEN</h2>
+                <p class="text-xs text-stone-400 mt-1">Join your community in preserving Lebanon's natural ecosystem.</p>
+            </div>
+
+            <div class="p-6 md:p-8 space-y-6">
+                <!-- Toggle Form Tabs -->
+                <div class="grid grid-cols-2 gap-2 p-1 bg-stone-100 rounded-xl text-center text-xs font-bold uppercase tracking-wider">
+                    <button id="tab-login" onclick="switchAuthTab('login')" class="py-2.5 rounded-lg bg-white shadow-xs text-stone-900 transition">Log In</button>
+                    <button id="tab-signup" onclick="switchAuthTab('signup')" class="py-2.5 rounded-lg text-stone-500 hover:text-stone-900 transition">Sign Up</button>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1.5">Username</label>
+                        <input type="text" id="login-username" class="w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-ecoGreen font-medium text-sm text-stone-800" placeholder="e.g. greenNeighbor" required>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1.5">Password</label>
+                        <input type="password" id="login-password" class="w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-ecoGreen font-medium text-sm text-stone-800" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="w-full bg-ecoGreen hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition shadow-md text-sm">
+                        Sign In & Enter Hub
+                    </button>
+                </form>
+
+                <!-- SIGN UP FORM -->
+                <form id="signup-form" onsubmit="handleSignup(event)" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1.5">Choose a Username</label>
+                        <input type="text" id="signup-username" class="w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-ecoGreen font-medium text-sm text-stone-800" placeholder="Minimum 3 characters" minlength="3" required>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1.5">Create a Password</label>
+                        <input type="password" id="signup-password" class="w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-ecoGreen font-medium text-sm text-stone-800" placeholder="Minimum 4 characters" minlength="4" required>
+                    </div>
+                    <div class="flex items-start gap-2 pt-1">
+                        <input type="checkbox" id="signup-agree" class="mt-0.5 rounded border-stone-300 text-ecoGreen focus:ring-ecoGreen" required>
+                        <label for="signup-agree" class="text-[11px] text-stone-500 leading-tight">I agree to bring organic agricultural materials safely to public depots.</label>
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition shadow-md text-sm">
+                        Create Account & Start Fresh
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- MAIN APPLICATION WORKFLOW CONTAINER        -->
+    <!-- ========================================== -->
+    <div id="app-content" class="hidden">
+        
+        <!-- Navigation Bar -->
+        <nav class="bg-white/95 backdrop-blur-md shadow-xs sticky top-0 z-40 border-b border-stone-100/80">
+            <div class="max-w-5xl mx-auto px-6 py-3 flex justify-between items-center">
+                <!-- Left Side Logo -->
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">🌱</span>
+                    <span class="text-xl font-bold tracking-tight text-ecoGreen">ECO<span class="text-olive">GREEN</span></span>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="hidden md:flex space-x-6 text-xs font-bold uppercase tracking-wider text-stone-500">
+                    <a href="#portal-section" class="hover:text-ecoGreen transition">Drop-Off Portal</a>
+                    <a href="#why-section" class="hover:text-ecoGreen transition">Our "Why"</a>
+                    <a href="#how-section" class="hover:text-ecoGreen transition">The Science</a>
+                </div>
+
+                <!-- Far Top Right User State & Points Control Balance Panel -->
+                <div class="flex items-center space-x-3">
+                    <!-- Dynamic Personalized Greeter -->
+                    <div class="text-right hidden sm:block">
+                        <p class="text-[10px] font-bold text-stone-400">Welcome back,</p>
+                        <p id="nav-username" class="text-xs font-bold text-stone-800">@User</p>
+                    </div>
+
+                    <!-- Point Balance Panel Display Widget -->
+                    <div class="bg-emerald-50 border border-emerald-200/60 px-3.5 py-1.5 rounded-2xl flex items-center space-x-2 shadow-xs">
+                        <span class="text-base animate-pulse">💚</span>
+                        <div class="text-left">
+                            <p class="text-[8px] uppercase font-bold tracking-wider text-emerald-800 leading-none">Your Balance</p>
+                            <p class="text-sm font-black text-emerald-900 leading-tight"><span id="userPoints">0</span> <span class="text-[10px] font-medium text-emerald-700">Pts</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Logout Dynamic Trigger Action Button -->
+                    <button onclick="handleLogout()" class="p-2 bg-stone-100 hover:bg-stone-200 text-stone-600 rounded-xl transition text-xs font-bold" title="Log Out Account">
+                        👋 Log Out
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Warm & Welcoming Hero Header -->
+        <header class="relative bg-cover bg-center py-24 px-6 text-center text-white" style="background-image: url('https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=1600&auto=format&fit=crop');">
+            <div class="absolute inset-0 bg-stone-900/55 backdrop-xs"></div>
+            
+            <div class="relative max-w-2xl mx-auto z-10 space-y-4">
+                <span class="bg-emerald-500/20 text-emerald-300 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-emerald-500/30">
+                    Welcome to the ECOGREEN Family 👋
+                </span>
+                <h1 class="text-4xl md:text-5xl font-black text-white leading-tight drop-shadow-md">
+                    Let's Nurture Lebanon's Landscapes, <span class="text-emerald-300 font-serif italic">Together.</span>
+                </h1>
+                <p class="text-base text-stone-100 max-w-lg mx-auto leading-relaxed font-medium">
+                    Every olive pit and grape skin holds the power to light up a home. Join your neighbors in turning farming residues into clean, regional renewable energy.
+                </p>
+                <div class="pt-2 flex justify-center space-x-4">
+                    <a href="#portal-section" class="bg-ecoGreen hover:bg-emerald-700 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-md transition transform hover:-translate-y-0.5">Start a Contribution</a>
+                    <a href="#why-section" class="bg-white/10 hover:bg-white/25 text-white font-bold text-sm px-6 py-3 rounded-xl border border-white/20 transition backdrop-blur-xs">Learn Why We Do It ↓</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Centralized Portal Section -->
+        <section id="portal-section" class="max-w-5xl mx-auto px-4 py-16 flex justify-center">
+            
+            <!-- Unified Card Box Box Container -->
+            <div class="w-full max-w-xl bg-white rounded-3xl shadow-xl border border-stone-100 overflow-hidden text-center transform transition duration-500 hover:shadow-2xl">
+                
+                <div class="bg-gradient-to-r from-stone-900 via-stone-800 to-stone-900 text-white p-6">
+                    <h2 class="text-xl font-bold flex items-center justify-center gap-2">
+                        ✨ Community Contribution Portal
+                    </h2>
+                    <p class="text-xs text-stone-400 mt-1">Ready to drop off? Select your neighborhood hub below.</p>
+                </div>
+
+                <!-- Centralized Sequential Steps Stack -->
+                <div class="p-6 md:p-8 space-y-6">
+                    
+                    <!-- Part 1: Choose Hub / Station Locator -->
+                    <div class="text-left bg-stone-50 rounded-2xl p-5 border border-stone-200/60">
+                        <div class="flex items-center space-x-2 mb-3">
+                            <span class="bg-amber-100 text-amber-800 rounded-full w-5 h-5 flex items-center justify-center font-bold text-xs">1</span>
+                            <h3 class="text-sm font-bold text-stone-900">Where are you dropping off today?</h3>
+                        </div>
+                        
+                        <select id="regionSelect" class="w-full p-3 bg-white border border-stone-200 rounded-xl shadow-xs focus:outline-none focus:ring-2 focus:ring-ecoGreen mb-4 font-medium text-sm text-stone-700" onchange="updateStations()">
+                            <option value="">-- Choose your nearest district region --</option>
+                            <option value="bekaa">Bekaa Valley (Wineries Region Hub)</option>
+                            <option value="koura">Koura District (Olive Groves Region Hub)</option>
+                            <option value="saida">Saida Region Hub</option>
+                        </select>
+
+                        <!-- Station Display Target Area Box -->
+                        <div id="mapSimulation" class="bg-white rounded-xl p-3 min-h-[110px] flex flex-col justify-center items-center text-center border-2 border-dashed border-stone-200 transition-all">
+                            <div id="mapPlaceholder" class="text-stone-400 p-2">
+                                <span class="text-xl block mb-1">📍</span>
+                                <p class="text-xs font-medium text-stone-500">Select a region above to show open community collection bins.</p>
+                            </div>
+                            <div id="stationList" class="w-full space-y-2 hidden"></div>
+                        </div>
+                    </div>
+
+                    <!-- Part 2: Form Logging Contribution Section -->
+                    <div id="depositSection" class="text-left space-y-4 transition-all duration-300 opacity-30 pointer-events-none">
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-emerald-100 text-emerald-800 rounded-full w-5 h-5 flex items-center justify-center font-bold text-xs">2</span>
+                            <h3 class="text-sm font-bold text-stone-900">What are you contributing?</h3>
+                        </div>
+                        
+                        <!-- Selected Station Status Alert Indicator Box -->
+                        <div class="bg-emerald-50/70 border border-emerald-200/60 rounded-xl p-3 flex items-center space-x-3 text-stone-900">
+                            <span class="text-lg">🏪</span>
+                            <div class="text-left">
+                                <p class="text-[9px] uppercase font-bold text-emerald-800 tracking-wider font-mono">Selected Intake Hub</p>
+                                <p id="activeStationDisplay" class="text-xs font-bold text-stone-800 truncate">Please pick a station item from step 1 above...</p>
+                            </div>
+                        </div>
+
+                        <!-- Live form inputs -->
+                        <form id="rewardForm" onsubmit="handleContribution(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-2">Organic Waste Type</label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button type="button" id="btnOlive" onclick="setWasteType('Olive Pomace')" class="py-2.5 px-3 rounded-xl border border-stone-200 text-center text-xs font-semibold transition-all bg-white hover:border-olive flex items-center justify-center gap-2 text-stone-700">
+                                        🫒 <span>Olive Waste</span>
+                                    </button>
+                                    <button type="button" id="btnGrape" onclick="setWasteType('Grape Marl')" class="py-2.5 px-3 rounded-xl border border-stone-200 text-center text-xs font-semibold transition-all bg-white hover:border-wine flex items-center justify-center gap-2 text-stone-700">
+                                        🍇 <span>Grape Waste</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-2">Estimated Weight</label>
+                                <div class="relative">
+                                    <input type="number" id="wasteWeight" min="1" max="1000" placeholder="e.g. 20" class="w-full p-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-ecoGreen font-medium text-sm" required>
+                                    <span class="absolute right-4 top-3 text-xs text-stone-400 font-bold">KG</span>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full bg-ecoGreen hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 text-sm mt-2">
+                                🎉 Confirm Drop-off & Claim Points
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- THE WHY SECTION -->
+        <section id="why-section" class="bg-white border-t border-b border-stone-200/60 py-20 px-6">
+            <div class="max-w-4xl mx-auto space-y-12">
+                <div class="text-center max-w-xl mx-auto space-y-3">
+                    <span class="text-xs font-bold text-ecoGreen uppercase tracking-widest block font-mono">Our Deep Motivation</span>
+                    <h2 class="text-3xl font-black text-stone-900 tracking-tight">Why does ECOGREEN exist?</h2>
+                    <p class="text-sm text-stone-600 leading-relaxed">
+                        Lebanon is world-renowned for its beautiful old wineries in the Bekaa and historic olive orchards in Koura. However, processing these crops leaves thousands of tons of wet agricultural waste behind.
+                    </p>
+                </div>
+
+                <!-- Core Challenges Grid Layout -->
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-stone-50 p-6 rounded-2xl border border-stone-100 text-left space-y-3">
+                        <div class="text-2xl">🔥</div>
+                        <h3 class="font-bold text-stone-900 text-base">The Waste Crisis</h3>
+                        <p class="text-xs text-stone-600 leading-relaxed">
+                            Instead of being reused, wet grape mash and compressed olive pulp are often left out to rot or disposed of via unsafe open-air farm fires, creating toxic greenhouse smoke.
+                        </p>
+                    </div>
+                    <div class="bg-stone-50 p-6 rounded-2xl border border-stone-100 text-left space-y-3">
+                        <div class="text-2xl">💧</div>
+                        <h3 class="font-bold text-stone-900 text-base">Protecting Soils</h3>
+                        <p class="text-xs text-stone-600 leading-relaxed">
+                            When massive batches of acidic agricultural waste degrade on open ground, rainwater runoff washes concentrated residues into underground rivers, polluting village wells.
+                        </p>
+                    </div>
+                    <div class="bg-stone-50 p-6 rounded-2xl border border-stone-100 text-left space-y-3">
+                        <div class="text-2xl">⚡</div>
+                        <h3 class="font-bold text-stone-900 text-base">Energy Security</h3>
+                        <p class="text-xs text-stone-600 leading-relaxed">
+                            Many rural areas face electricity shortages. By building neighborhood biogas networks, we produce a safe, renewable power source controlled completely by the community.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- THE SCIENCE SECTION -->
+        <section id="how-section" class="py-20 px-6 bg-stone-50">
+            <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+                <div class="relative rounded-3xl overflow-hidden h-72 shadow-lg bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1200&auto=format&fit=crop');">
+                    <div class="absolute inset-0 bg-gradient-to-t from-stone-900/80 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6 text-white text-left">
+                        <span class="text-[10px] font-bold uppercase tracking-wider bg-emerald-600 px-2.5 py-1 rounded-md">Anaerobic Digestion</span>
+                        <h4 class="text-lg font-bold mt-1">Nature's Clean Recycling Loop</h4>
+                    </div>
+                </div>
+
+                <div class="text-left space-y-4">
+                    <span class="text-xs font-bold text-olive uppercase tracking-widest block font-mono">How the System Works</span>
+                    <h2 class="text-2xl font-black text-stone-900 tracking-tight">Converting Waste to Fuel</h2>
+                    <p class="text-xs text-stone-600 leading-relaxed">
+                        Once you bring your agricultural waste items to our public collection hubs, the material is transferred directly to sealed, oxygen-free biomass digesters located near the fields.
+                    </p>
+                    <p class="text-xs text-stone-600 leading-relaxed">
+                        Naturally occurring beneficial micro-organisms break down the matter over a few weeks. This organic cycle outputs **biogas** (which can be used for electricity and heating) and **nutrient-rich bio-fertilizer**, which is given right back to local farmers to look after the soil!
+                    </p>
+                    <div class="bg-white p-4 rounded-xl border border-stone-200/80 flex items-center space-x-3">
+                        <span class="text-xl">🎁</span>
+                        <p class="text-[11px] text-stone-600 font-medium">
+                            <strong>Why points?</strong> To thank you for safeguarding our environment, every drop-off adds green points to your digital account, which are redeemable for discounts on organic crop products and local transport passes!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Community Impact Counter Widget Section -->
+        <section class="max-w-5xl mx-auto px-4 py-8 text-center">
+            <div class="bg-stone-900 rounded-3xl p-8 text-white grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div>
+                    <p class="text-2xl md:text-3xl font-black text-emerald-400">14,280</p>
+                    <p class="text-[10px] text-stone-400 uppercase font-bold tracking-wider mt-1">KG Waste Restored</p>
+                </div>
+                <div>
+                    <p class="text-2xl md:text-3xl font-black text-emerald-400">340</p>
+                    <p class="text-[10px] text-stone-400 uppercase font-bold tracking-wider mt-1">Homes Powered</p>
+                </div>
+                <div>
+                    <p class="text-2xl md:text-3xl font-black text-emerald-400">92%</p>
+                    <p class="text-[10px] text-stone-400 uppercase font-bold tracking-wider mt-1">Farming Signup Rate</p>
+                </div>
+                <div>
+                    <p class="text-2xl md:text-3xl font-black text-emerald-400">42,000</p>
+                    <p class="text-[10px] text-stone-400 uppercase font-bold tracking-wider mt-1">Green Points Issued</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project Footer -->
+        <footer class="bg-stone-900 text-stone-500 py-6 text-center text-xs border-t border-stone-800">
+            <p>© 2026 ECOGREEN Lebanon Project. Built for interactive design prototyping.</p>
+        </footer>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT SYSTEM LOGIC                    -->
+    <!-- ========================================== -->
+    <script>
+        // Data Structures for Core Application Hubs
+        const stationsByRegion = {
+            bekaa: [
+                { name: "Zahle Winery Collective Hub", desc: "Accepts bulk grape pomace.", distance: "1.2 km away" },
+                { name: "West Bekaa Biomass Depot", desc: "Main highway junction container.", distance: "4.5 km away" }
+            ],
+            koura: [
+                { name: "Koura Valley Press Station", desc: "Located behind the historic olive mill.", distance: "0.8 km away" },
+                { name: "Amioun Community Eco-Point", desc: "Popular public square drop-off point.", distance: "2.1 km away" }
+            ],
+            saida: [
+                { name: "Saida Coastal Sub-Station", desc: "Urban collection point for residential sorting.", distance: "3.4 km away" }
+            ]
+        };
+
+        let selectedWasteType = '';
+        let selectedStationName = '';
+        let currentActiveUser = null;
+
+        // On Page Load: Check authentication state
+        window.addEventListener('DOMContentLoaded', () => {
+            initAuthSession();
+        });
+
+        // ------------------------------------------
+        // AUTHENTICATION CORE LOGIC
+        // ------------------------------------------
+        function initAuthSession() {
+            const sessionUser = localStorage.getItem('ecogreen_session_user');
+            if (sessionUser) {
+                loadUserDashboard(sessionUser);
+            } else {
+                showAuthOverlay();
+            }
+        }
+
+        function showAuthOverlay() {
+            document.getElementById('app-content').classList.add('hidden');
+            document.getElementById('auth-view').classList.remove('hidden');
+        }
+
+        function switchAuthTab(tab) {
+            const tabLogin = document.getElementById('tab-login');
+            const tabSignup = document.getElementById('tab-signup');
+            const formLogin = document.getElementById('login-form');
+            const formSignup = document.getElementById('signup-form');
+
+            if (tab === 'login') {
+                tabLogin.className = "py-2.5 rounded-lg bg-white shadow-xs text-stone-900 transition";
+                tabSignup.className = "py-2.5 rounded-lg text-stone-500 hover:text-stone-900 transition";
+                formLogin.classList.remove('hidden');
+                formSignup.classList.add('hidden');
+            } else {
+                tabSignup.className = "py-2.5 rounded-lg bg-white shadow-xs text-stone-900 transition";
+                tabLogin.className = "py-2.5 rounded-lg text-stone-500 hover:text-stone-900 transition";
+                formSignup.classList.remove('hidden');
+                formLogin.classList.add('hidden');
+            }
+        }
+
+        // Fetch user database object from localStorage safely
+        function getUsersDB() {
+            const db = localStorage.getItem('ecogreen_users_db');
+            return db ? JSON.parse(db) : {};
+        }
+
+        function saveUsersDB(db) {
+            localStorage.setItem('ecogreen_users_db', JSON.stringify(db));
+        }
+
+        function handleSignup(event) {
+            event.preventDefault();
+            const usernameInput = document.getElementById('signup-username').value.trim();
+            const passwordInput = document.getElementById('signup-password').value;
+
+            const db = getUsersDB();
+
+            if (db[usernameInput.toLowerCase()]) {
+                alert("❌ That username is already registered! Please choose a different one or click Log In.");
+                return;
+            }
+
+            // Create a brand new user profile tied to their account balance metric data
+            db[usernameInput.toLowerCase()] = {
+                displayName: usernameInput,
+                password: passwordInput,
+                points: 0
+            };
+
+            saveUsersDB(db);
+            
+            // Set session environment state parameters
+            localStorage.setItem('ecogreen_session_user', usernameInput.toLowerCase());
+            document.getElementById('signup-form').reset();
+            
+            loadUserDashboard(usernameInput.toLowerCase());
+            alert(`🎉 Welcome to the family, ${usernameInput}! Your eco-account has been successfully created.`);
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const usernameInput = document.getElementById('login-username').value.trim().toLowerCase();
+            const passwordInput = document.getElementById('login-password').value;
+
+            const db = getUsersDB();
+            const userAccount = db[usernameInput];
+
+            if (!userAccount || userAccount.password !== passwordInput) {
+                alert("❌ Invalid username or password. Please try again or create a new account.");
+                return;
+            }
+
+            localStorage.setItem('ecogreen_session_user', usernameInput);
+            document.getElementById('login-form').reset();
+            
+            loadUserDashboard(usernameInput);
+        }
+
+        function loadUserDashboard(userKey) {
+            currentActiveUser = userKey;
+            const db = getUsersDB();
+            const userAccount = db[userKey];
+
+            // Safety fallback check validation loops
+            if (!userAccount) {
+                handleLogout();
+                return;
+            }
+
+            // Initialize interface strings text
+            document.getElementById('nav-username').innerText = `@${userAccount.displayName}`;
+            document.getElementById('userPoints').innerText = userAccount.points;
+
+            // Interface Visibility Switch transitions
+            document.getElementById('auth-view').classList.add('hidden');
+            document.getElementById('app-content').classList.remove('hidden');
+            
+            // Clear any old selected metrics fields
+            resetDropoffSection();
+            document.getElementById('regionSelect').value = "";
+            updateStations();
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('ecogreen_session_user');
+            currentActiveUser = null;
+            showAuthOverlay();
+        }
+
+        // ------------------------------------------
+        // PORTAL WORKFLOW LOGIC
+        // ------------------------------------------
+        function updateStations() {
+            const region = document.getElementById('regionSelect').value;
+            const placeholder = document.getElementById('mapPlaceholder');
+            const listContainer = document.getElementById('stationList');
+            const mapSim = document.getElementById('mapSimulation');
+            
+            if (!region) {
+                placeholder.classList.remove('hidden');
+                listContainer.classList.add('hidden');
+                mapSim.className = "bg-white rounded-xl p-3 min-h-[110px] flex flex-col justify-center items-center text-center border-2 border-dashed border-stone-200";
+                resetDropoffSection();
+                return;
+            }
+
+            placeholder.classList.add('hidden');
+            listContainer.classList.remove('hidden');
+            mapSim.className = "w-full bg-stone-50 rounded-xl p-2 border border-stone-200 space-y-2";
+            listContainer.innerHTML = '';
+
+            stationsByRegion[region].forEach(station => {
+                const item = document.createElement('div');
+                item.className = "bg-white p-3 rounded-lg border border-stone-200 text-left shadow-xs flex justify-between items-center hover:border-ecoGreen transition cursor-pointer group";
+                item.onclick = () => activateStationWorkflow(station.name);
+                item.innerHTML = `
+                    <div class="pr-2 truncate">
+                        <h4 class="font-bold text-stone-900 text-xs group-hover:text-ecoGreen transition truncate">${station.name}</h4>
+                        <p class="text-[10px] text-stone-500 mt-0.5 truncate">${station.desc}</p>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <span class="text-[9px] font-bold px-1.5 py-0.5 bg-emerald-50 text-ecoGreen rounded-full">${station.distance}</span>
+                        <span class="block text-[10px] font-bold text-emerald-600 mt-1 group-hover:underline">Select Hub →</span>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        function activateStationWorkflow(stationName) {
+            selectedStationName = stationName;
+            document.getElementById('activeStationDisplay').innerText = stationName;
+            
+            const depositSec = document.getElementById('depositSection');
+            depositSec.classList.remove('opacity-30', 'pointer-events-none');
+            
+            depositSec.classList.add('bg-emerald-50/20', 'p-2', 'rounded-2xl');
+            setTimeout(() => {
+                depositSec.classList.remove('bg-emerald-50/20', 'p-2', 'rounded-2xl');
+            }, 600);
+        }
+
+        function resetDropoffSection() {
+            selectedStationName = '';
+            document.getElementById('activeStationDisplay').innerText = "Please pick a station item from step 1 above...";
+            document.getElementById('depositSection').classList.add('opacity-30', 'pointer-events-none');
+            clearFormSelection();
+        }
+
+        function setWasteType(type) {
+            selectedWasteType = type;
+            const btnOlive = document.getElementById('btnOlive');
+            const btnGrape = document.getElementById('btnGrape');
+
+            if (type === 'Olive Pomace') {
+                btnOlive.className = "py-2.5 px-3 rounded-xl border-2 text-center text-xs font-bold transition-all bg-emerald-50 border-olive text-olive flex items-center justify-center gap-1.5 shadow-xs";
+                btnGrape.className = "py-2.5 px-3 rounded-xl border border-stone-200 text-center text-xs font-medium transition-all bg-white text-stone-400 opacity-40 flex items-center justify-center gap-2 text-stone-700";
+            } else {
+                btnGrape.className = "py-2.5 px-3 rounded-xl border-2 text-center text-xs font-bold transition-all bg-purple-50 border-wine text-wine flex items-center justify-center gap-1.5 shadow-xs";
+                btnOlive.className = "py-2.5 px-3 rounded-xl border border-stone-200 text-center text-xs font-medium transition-all bg-white text-stone-400 opacity-40 flex items-center justify-center gap-2 text-stone-700";
+            }
+        }
+
+        function clearFormSelection() {
+            selectedWasteType = '';
+            document.getElementById('rewardForm').reset();
+            document.getElementById('btnOlive').className = "py-2.5 px-3 rounded-xl border text-center text-xs font-medium transition-all bg-white border-stone-200 hover:border-olive flex items-center justify-center gap-2 text-stone-700";
+            document.getElementById('btnGrape').className = "py-2.5 px-3 rounded-xl border text-center text-xs font-medium transition-all bg-white border-stone-200 hover:border-wine flex items-center justify-center gap-2 text-stone-700";
+        }
+
+        function handleContribution(event) {
+            event.preventDefault();
+            
+            if (!currentActiveUser) return;
+            if (!selectedStationName) {
+                alert("Please click and choose a specific station hub above first!");
+                return;
+            }
+            if (!selectedWasteType) {
+                alert("Please choose a waste material category first!");
+                return;
+            }
+
+            const weight = parseFloat(document.getElementById('wasteWeight').value);
+            if (!weight || weight <= 0) return;
+
+            const earnedPoints = Math.round(weight * 10);
+            
+            // Save updated balance back into user's account database file structures metrics
+            const db = getUsersDB();
+            db[currentActiveUser].points += earnedPoints;
+            saveUsersDB(db);
+
+            // Reflect on visual view panel values live
+            document.getElementById('userPoints').innerText = db[currentActiveUser].points;
+            
+            alert(`🎉 Thank You, Neighbor!\n\nHub: ${selectedStationName}\nDeposited: ${weight} kg of ${selectedWasteType}\nPoints Saved to Account: +${earnedPoints} Green Points!`);
+            
+            clearFormSelection();
+        }
+    </script>
+</body>
+</html>
